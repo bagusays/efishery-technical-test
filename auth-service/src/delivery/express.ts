@@ -1,5 +1,5 @@
 import { Container } from './../container';
-import { IHttpServer } from './server';
+import { IHttpServer } from './common';
 // import { Config } from './../config';
 import * as http from 'http';
 import express, { Express, NextFunction, Response, Request, } from 'express';
@@ -16,15 +16,16 @@ export class ExpressHTTP implements IHttpServer {
 
     constructor(container: Container) {
         this._httpServer = express();
-        this._httpServer.use(errorHandler);
+        this._httpServer.use(express.json())
         this._container = container;
 
         this._authHandler = new AuthHandler();
         this.registerRoutes();
+        this._httpServer.use(errorHandler);
     }
 
     registerRoutes() {
-        this._httpServer.get("/api/auth/validate", this._authHandler.validate(this._container))
+        this._httpServer.post("/api/auth/create", this._authHandler.create(this._container))
     }
 
     start(): http.Server {
