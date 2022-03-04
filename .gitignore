@@ -1,0 +1,3 @@
+auth-service/config/config.env
+auth-service/node_modules/
+.DS_Store
