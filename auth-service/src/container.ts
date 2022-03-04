@@ -1,14 +1,14 @@
 import { Config } from './config/index';
-import { Auth } from "./service/auth"
+import { UserService } from "./service/user"
 
 export type Container = {
     config: Config;
-    authService: Auth;
+    userService: UserService;
 }
 
 export function initContainer(cfg: Config): Container {
     return {
-    authService: new Auth(),
+    userService: new UserService(),
         config: cfg
     }
 }

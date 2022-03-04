@@ -1,11 +1,11 @@
-import { ERR_INVALID_ROLE } from './../error';
-import { enumRole, registry } from './../model/auth';
-import { Container } from './../container';
-import express, { Express, NextFunction, Response, Request, } from 'express';
+import { ERR_INVALID_ROLE } from '../error';
+import { enumRole, user } from '../model/user';
+import { Container } from '../container';
+import { NextFunction, Response, Request, } from 'express';
 import { ExpressRouteFunc } from './express'
 import { responseJSON } from './common';
 
-export class AuthHandler {
+export class UserHandler {
     create(container: Container): ExpressRouteFunc {
         type reqType = {
             phone: string;
@@ -19,20 +19,20 @@ export class AuthHandler {
         }
 
         return function(req: Request, res: Response, next?: NextFunction) {
-            const item: reqType = req.body;
+            const userReq: reqType = req.body;
             
-            if (!(item.role in enumRole)) {
+            if (!(userReq.role in enumRole)) {
                 throw ERR_INVALID_ROLE;
             }
 
-            const arg: registry = {
-                name: item.name,
-                phone: item.phone,
-                role: item.role,
-                userName: item.userName
+            const arg: user = {
+                name: userReq.name,
+                phone: userReq.phone,
+                role: userReq.role,
+                userName: userReq.userName
             }
             
-            const password = container.authService.create(arg)
+            const password = container.userService.create(arg)
             const resp: respType = {
                 password: password,
             }

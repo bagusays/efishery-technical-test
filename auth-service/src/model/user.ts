@@ -1,13 +1,13 @@
 export enum enumRole {
     ADMIN = "admin",
-    USER = "user"
+    BASIC = "basic"
 }
 
-export type registry = {
+export type user = {
     phone: string;
     name: string;
     role: enumRole;
     userName: string;
     password?: string;
-    timestamp?: string;
+    created_at?: string;
 }

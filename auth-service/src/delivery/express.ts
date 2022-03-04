@@ -3,14 +3,14 @@ import { IHttpServer } from './common';
 // import { Config } from './../config';
 import * as http from 'http';
 import express, { Express, NextFunction, Response, Request, } from 'express';
-import { AuthHandler } from './auth_handler'
+import { UserHandler } from './user_handler'
 import { errorHandler } from './error_handler';
 
 export type ExpressRouteFunc = (req: Request, res: Response, next?: NextFunction) => void | Promise<void>;
 
 export class ExpressHTTP implements IHttpServer {
     _port: number = 8080
-    _authHandler: AuthHandler;
+    _userHandler: UserHandler;
     _httpServer: Express;
     _container: Container;
 
@@ -19,13 +19,13 @@ export class ExpressHTTP implements IHttpServer {
         this._httpServer.use(express.json())
         this._container = container;
 
-        this._authHandler = new AuthHandler();
+        this._userHandler = new UserHandler();
         this.registerRoutes();
         this._httpServer.use(errorHandler);
     }
 
     registerRoutes() {
-        this._httpServer.post("/api/auth/create", this._authHandler.create(this._container))
+        this._httpServer.post("/api/auth/create", this._userHandler.create(this._container))
     }
 
     start(): http.Server {
