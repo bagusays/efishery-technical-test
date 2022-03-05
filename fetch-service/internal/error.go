@@ -26,4 +26,5 @@ func NewError(status, message string) *Error {
 var (
 	ErrInvalidToken   = NewError("01", "invalid token")
 	ErrTokenIsMissing = NewError("02", "token is missing")
+	ErrUnauthorized   = NewError("03", "unauthorized")
 )

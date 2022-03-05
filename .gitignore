@@ -2,3 +2,4 @@ auth-service/config/config.env
 auth-service/node_modules/
 .DS_Store
 auth-service/users.json
+fetch-service/__debug_bin

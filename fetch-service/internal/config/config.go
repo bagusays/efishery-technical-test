@@ -6,14 +6,26 @@ import (
 	"os"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/spf13/viper"
 )
 
 // DefaultConfig :nodoc:
 type DefaultConfig struct {
-	Port      string `json:"8081"`
-	JwtSecret string `json:"jwtSecret"`
+	Port              string            `json:"8081"`
+	JwtSecret         string            `json:"jwtSecret"`
+	CurrencyConverter CurrencyConverter `json:"currencyConverter"`
+	Efishery          Efishery          `json:"efishery"`
+}
+
+type CurrencyConverter struct {
+	APIKey      string        `json:"apiKey"`
+	HttpTimeout time.Duration `json:"httpTimeout"`
+}
+
+type Efishery struct {
+	HttpTimeout time.Duration `json:"httpTimeout"`
 }
 
 var (

@@ -1,4 +1,11 @@
 {
     "port": "8081",
-    "jwtSecret": "yCsWIzH67sxldDC5K9l55ZxKYjiFoUjugmYLz3Nv"
+    "jwtSecret": "yCsWIzH67sxldDC5K9l55ZxKYjiFoUjugmYLz3Nv",
+    "currencyConverter": {
+        "apiKey": "ea32cbcaca4de49a9ab8",
+        "httpTimeout": 5
+    },
+    "efishery": {
+        "httpTimeout": 5
+    }
 }

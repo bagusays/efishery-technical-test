@@ -4,14 +4,16 @@ import (
 	"context"
 
 	"github.com/bagusays/efishery-technical-test/internal/app"
+	"github.com/bagusays/efishery-technical-test/internal/model"
 	"github.com/bagusays/efishery-technical-test/internal/service"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
 
 type server struct {
-	echoServer  *echo.Echo
-	authService *service.Auth
+	echoServer      *echo.Echo
+	authService     *service.Auth
+	resourceService *service.Resource
 }
 
 // New - creating new instance for apidb echoServer
@@ -43,8 +45,9 @@ func New(container *app.Container) Server {
 	echoServer.HideBanner = true
 
 	h := server{
-		echoServer:  echoServer,
-		authService: container.AuthService,
+		echoServer:      echoServer,
+		authService:     container.AuthService,
+		resourceService: container.ResourceService,
 	}
 
 	h.routes()
@@ -66,4 +69,5 @@ func (h *server) Stop(ctx context.Context) error {
 
 func (h *server) routes() {
 	h.echoServer.GET("/api/auth/validate", h.ValidateToken)
+	h.echoServer.GET("/api/resource", h.FetchAllResource, AuthMiddlware(model.RoleBasic, model.RoleAdmin))
 }
