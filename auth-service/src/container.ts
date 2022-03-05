@@ -9,7 +9,7 @@ export type Container = {
 }
 
 export function initContainer(cfg: Config): Container {
-    const userService = new UserService();
+    const userService = new UserService(cfg.DB_FILENAME);
     return {
         authService: new AuthService(cfg, userService),
         userService: userService,
