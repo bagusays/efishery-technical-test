@@ -3,6 +3,7 @@ import { UserService } from './user';
 import { Config } from './../config/index';
 import * as jwt from 'jsonwebtoken';
 import { user } from '../model/user';
+import { sha256 } from '../common';
 export class AuthService {
     _config: Config;
     _userService: UserService;
@@ -15,7 +16,7 @@ export class AuthService {
     login(phone: string, password: string): string {
         const expiresIn = 60 * 60; // an hour
         const user: user = this._userService.findByPhone(phone)
-        if (user.password !== password) {
+        if (user.password !== sha256(this._config.HASH_PEPPER, phone, password)) {
             throw ERR_INVALID_CREDENTIAL
         }
 
