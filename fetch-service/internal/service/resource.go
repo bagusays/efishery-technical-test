@@ -8,9 +8,11 @@ import (
 
 	"golang.org/x/sync/errgroup"
 
+	"github.com/bagusays/efishery-technical-test/internal"
 	"github.com/bagusays/efishery-technical-test/internal/model"
 	"github.com/bagusays/efishery-technical-test/internal/shared/integration/currency_converter"
 	"github.com/bagusays/efishery-technical-test/internal/shared/integration/efishery"
+	"github.com/spf13/cast"
 )
 
 type Resource struct {
@@ -34,12 +36,12 @@ func (r Resource) FetchResource(ctx context.Context) ([]model.Resource, error) {
 
 	errG, _ := errgroup.WithContext(context.Background())
 	errG.Go(func() error {
-		resources, err = r.efisheryClient.FetchResource(ctx)
+		resources, err = r.getResource(ctx)
 		return err
 	})
 
 	errG.Go(func() error {
-		usd, err = r.currencyConverterClient.Convert(ctx, currency_converter.CurrencyUSD, currency_converter.CurrencyIDR)
+		usd, err = r.getUSD(ctx)
 		return err
 	})
 
@@ -72,4 +74,42 @@ func (r Resource) FetchResource(ctx context.Context) ([]model.Resource, error) {
 	}
 
 	return finalResources, nil
+}
+
+func (r Resource) getUSD(ctx context.Context) (float64, error) {
+	key := "usd"
+	usd, err := internal.GetCache(key)
+	if err == nil {
+		f, err := cast.ToFloat64E(usd)
+		if err != nil {
+			return 0, err
+		}
+		return f, nil
+	}
+
+	newUsd, err := r.currencyConverterClient.Convert(ctx, currency_converter.CurrencyUSD, currency_converter.CurrencyIDR)
+	if err != nil {
+		return 0, err
+	}
+
+	internal.SetCache(key, newUsd, time.Now().Add(24*time.Hour))
+	return newUsd, nil
+}
+
+func (r Resource) getResource(ctx context.Context) ([]efishery.ResourceResponse, error) {
+	key := "resource"
+	data, err := internal.GetCache(key)
+	if err == nil {
+		if d, ok := data.([]efishery.ResourceResponse); ok {
+			return d, nil
+		}
+	}
+
+	resources, err := r.efisheryClient.FetchResource(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	internal.SetCache(key, resources, time.Now().Add(24*time.Hour))
+	return resources, nil
 }
