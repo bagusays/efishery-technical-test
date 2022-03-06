@@ -4,17 +4,20 @@ import (
 	"strings"
 
 	"github.com/bagusays/efishery-technical-test/internal"
-	"github.com/bagusays/efishery-technical-test/internal/config"
 	"github.com/bagusays/efishery-technical-test/internal/model"
 	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 )
 
+type Middleware struct {
+	jwtSecret string
+}
+
 // AuthorizeFor :nodoc:
-func AuthorizeFor(roles ...model.Role) echo.MiddlewareFunc {
+func (m Middleware) AuthorizeFor(roles ...model.Role) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			role, err := extractRoleFromToken(c)
+			role, err := m.extractRoleFromToken(c)
 			if err != nil {
 				return err
 			}
@@ -30,7 +33,7 @@ func AuthorizeFor(roles ...model.Role) echo.MiddlewareFunc {
 	}
 }
 
-func extractRoleFromToken(c echo.Context) (role model.Role, err error) {
+func (m Middleware) extractRoleFromToken(c echo.Context) (role model.Role, err error) {
 	tokenString := c.Request().Header.Get(echo.HeaderAuthorization)
 	tokenString = strings.Replace(tokenString, "Bearer ", "", -1)
 	if tokenString == "" {
@@ -38,7 +41,7 @@ func extractRoleFromToken(c echo.Context) (role model.Role, err error) {
 	}
 
 	token, err := jwt.ParseWithClaims(tokenString, &model.UserClaim{}, func(token *jwt.Token) (interface{}, error) {
-		return []byte(config.GetConfig().JwtSecret), nil
+		return []byte(m.jwtSecret), nil
 	})
 
 	if err != nil {

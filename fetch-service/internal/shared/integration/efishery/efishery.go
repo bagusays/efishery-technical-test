@@ -9,11 +9,16 @@ import (
 	"github.com/bagusays/efishery-technical-test/internal/shared/integration"
 )
 
-type Client struct {
+//go:generate mockgen -destination=mock/mock_efishery.go -package=mock github.com/bagusays/efishery-technical-test/internal/shared/integration/efishery Client
+type Client interface {
+	FetchResource(ctx context.Context) ([]ResourceResponse, error)
+}
+
+type client struct {
 	httpClient *http.Client
 }
 
-func NewClient() *Client {
+func NewClient() Client {
 	timeout := 10 * time.Second
 	if config.GetConfig().Efishery.HttpTimeout != 0 {
 		timeout = config.GetConfig().Efishery.HttpTimeout
@@ -22,7 +27,7 @@ func NewClient() *Client {
 	httpClient := &http.Client{
 		Timeout: timeout,
 	}
-	return &Client{
+	return &client{
 		httpClient: httpClient,
 	}
 }
@@ -38,7 +43,7 @@ type ResourceResponse struct {
 	Timestamp    string `json:"timestamp"`
 }
 
-func (c Client) FetchResource(ctx context.Context) ([]ResourceResponse, error) {
+func (c client) FetchResource(ctx context.Context) ([]ResourceResponse, error) {
 	url := "https://stein.efishery.com/v1/storages/5e1edf521073e315924ceab4/list"
 
 	var result []ResourceResponse

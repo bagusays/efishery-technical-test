@@ -16,19 +16,25 @@ import (
 	"github.com/spf13/cast"
 )
 
-type Resource struct {
-	currencyConverterClient *currency_converter.Client
-	efisheryClient          *efishery.Client
+//go:generate mockgen -destination=mock/mock_resource.go -package=mock github.com/bagusays/efishery-technical-test/internal/service Resource
+type Resource interface {
+	FetchResource(ctx context.Context) ([]model.Resource, error)
+	ResourceStatistics(ctx context.Context) ([]model.ResourceStatistics, error)
 }
 
-func NewResource(currencyConverterClient *currency_converter.Client, efisheryClient *efishery.Client) *Resource {
-	return &Resource{
+type resource struct {
+	currencyConverterClient currency_converter.Client
+	efisheryClient          efishery.Client
+}
+
+func NewResource(currencyConverterClient currency_converter.Client, efisheryClient efishery.Client) Resource {
+	return &resource{
 		currencyConverterClient: currencyConverterClient,
 		efisheryClient:          efisheryClient,
 	}
 }
 
-func (r Resource) ResourceStatistics(ctx context.Context) ([]model.ResourceStatistics, error) {
+func (r resource) ResourceStatistics(ctx context.Context) ([]model.ResourceStatistics, error) {
 	resources, err := r.FetchResource(ctx)
 	if err != nil {
 		return nil, err
@@ -53,7 +59,7 @@ func (r Resource) ResourceStatistics(ctx context.Context) ([]model.ResourceStati
 	return nil, nil
 }
 
-func (r Resource) FetchResource(ctx context.Context) ([]model.Resource, error) {
+func (r resource) FetchResource(ctx context.Context) ([]model.Resource, error) {
 	var (
 		resources []efishery.ResourceResponse
 		usd       float64
@@ -112,7 +118,7 @@ func (r Resource) FetchResource(ctx context.Context) ([]model.Resource, error) {
 	return finalResources, nil
 }
 
-func (r Resource) getUSD(ctx context.Context) (float64, error) {
+func (r resource) getUSD(ctx context.Context) (float64, error) {
 	key := "usd"
 	usd, err := internal.GetCache(key)
 	if err == nil {
@@ -132,7 +138,7 @@ func (r Resource) getUSD(ctx context.Context) (float64, error) {
 	return newUsd, nil
 }
 
-func (r Resource) getResource(ctx context.Context) ([]efishery.ResourceResponse, error) {
+func (r resource) getResource(ctx context.Context) ([]efishery.ResourceResponse, error) {
 	key := "resource"
 	data, err := internal.GetCache(key)
 	if err == nil {

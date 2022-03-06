@@ -30,3 +30,7 @@ func GetCache(key string) (interface{}, error) {
 	}
 	return data.Value, nil
 }
+
+func FlushCache() {
+	cacheData = make(map[string]Cache)
+}

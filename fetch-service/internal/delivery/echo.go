@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/bagusays/efishery-technical-test/internal/app"
+	"github.com/bagusays/efishery-technical-test/internal/config"
 	"github.com/bagusays/efishery-technical-test/internal/model"
 	"github.com/bagusays/efishery-technical-test/internal/service"
 	"github.com/labstack/echo/v4"
@@ -12,8 +13,8 @@ import (
 
 type server struct {
 	echoServer      *echo.Echo
-	authService     *service.Auth
-	resourceService *service.Resource
+	authService     service.Auth
+	resourceService service.Resource
 }
 
 // New - creating new instance for apidb echoServer
@@ -50,7 +51,11 @@ func New(container *app.Container) Server {
 		resourceService: container.ResourceService,
 	}
 
-	h.routes()
+	middleware := Middleware{
+		jwtSecret: config.GetConfig().JwtSecret,
+	}
+
+	h.routes(middleware)
 
 	return &h
 }
@@ -67,8 +72,9 @@ func (h *server) Stop(ctx context.Context) error {
 	return nil
 }
 
-func (h *server) routes() {
+func (h *server) routes(middleware Middleware) {
+
 	h.echoServer.GET("/api/auth/validate", h.ValidateToken)
-	h.echoServer.GET("/api/resources", h.FetchAllResource, AuthorizeFor(model.RoleBasic, model.RoleAdmin))
-	h.echoServer.GET("/api/resources/statistics", h.ResourceStatistics, AuthorizeFor(model.RoleAdmin))
+	h.echoServer.GET("/api/resources", h.FetchAllResource, middleware.AuthorizeFor(model.RoleBasic, model.RoleAdmin))
+	h.echoServer.GET("/api/resources/statistics", h.ResourceStatistics, middleware.AuthorizeFor(model.RoleAdmin))
 }
