@@ -1,0 +1,25 @@
+version: "3"
+
+services:
+  auth-service:
+    build:
+      context: .
+    container_name: auth-service
+    image: auth-service
+    restart: unless-stopped
+    volumes:
+      - ./auth-service/config:/app/config
+    ports:
+      - "8080:8080"
+
+  fetch-service:
+    build:
+      context: .
+    container_name: fetch-service
+    image: fetch-service
+    restart: unless-stopped
+    volumes:
+      - ./fetch-service/config:/app/config
+    ports:
+      - "8081:8081"
+      
