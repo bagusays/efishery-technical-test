@@ -4,7 +4,7 @@ import { IHttpServer } from './common';
 import * as http from 'http';
 import express, { Express, NextFunction, Response, Request, } from 'express';
 import { UserHandler } from './user_handler'
-import { errorHandler } from './error_handler';
+import { errorHandler, errorNotFound } from './error_handler';
 
 export type ExpressRouteFunc = (req: Request, res: Response, next?: NextFunction) => void | Promise<void>;
 
@@ -26,6 +26,7 @@ export class ExpressHTTP implements IHttpServer {
         this.registerRoutes();
 
         this._httpServer.use(errorHandler);
+        this._httpServer.use(errorNotFound);
     }
 
     registerRoutes() {

@@ -69,5 +69,6 @@ func (h *server) Stop(ctx context.Context) error {
 
 func (h *server) routes() {
 	h.echoServer.GET("/api/auth/validate", h.ValidateToken)
-	h.echoServer.GET("/api/resource", h.FetchAllResource, AuthMiddlware(model.RoleBasic, model.RoleAdmin))
+	h.echoServer.GET("/api/resources", h.FetchAllResource, AuthorizeFor(model.RoleBasic, model.RoleAdmin))
+	h.echoServer.GET("/api/resources/statistics", h.ResourceStatistics, AuthorizeFor(model.RoleAdmin))
 }

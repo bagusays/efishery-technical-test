@@ -10,10 +10,8 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// LANJUT NAMBAHIN MIDDLEWARE BUAT CHECK TOKEN DAN ROLE
-
-// AuthMiddlware :nodoc:
-func AuthMiddlware(roles ...model.Role) echo.MiddlewareFunc {
+// AuthorizeFor :nodoc:
+func AuthorizeFor(roles ...model.Role) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			role, err := extractRoleFromToken(c)

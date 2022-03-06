@@ -12,10 +12,6 @@ export class UserService {
     }
 
     create(args: user): string {
-        if (!existsSync(this._config.DB_FILENAME)) {
-            writeFileSync(this._config.DB_FILENAME, "[]")
-        }
-
         let usersjson = readFileSync(this._config.DB_FILENAME, "utf-8");
         let users: user[] = JSON.parse(usersjson);
         if(users.find(x => x.userName === args.userName && x.phone === args.phone)) {

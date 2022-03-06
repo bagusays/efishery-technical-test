@@ -13,3 +13,12 @@ type Resource struct {
 	ParsedDate   time.Time `json:"tgl_parsed"`
 	Timestamp    string    `json:"timestamp"`
 }
+
+type ResourceStatistics struct {
+	ProvinceArea string    `json:"province"`
+	Date         time.Time `json:"date"`
+	Min          string    `json:"min"`
+	Max          string    `json:"max"`
+	Median       string    `json:"median"`
+	Average      string    `json:"average"`
+}

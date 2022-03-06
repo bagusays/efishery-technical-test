@@ -1,5 +1,5 @@
 import { ERR_INVALID_ROLE } from '../error';
-import { enumRole, user } from '../model/user';
+import { enumRole, toRole, user } from '../model/user';
 import { Container } from '../container';
 import { NextFunction, Response, Request, } from 'express';
 import { ExpressRouteFunc } from './express'
@@ -10,7 +10,7 @@ export class UserHandler {
         type reqType = {
             phone: string;
             name: string;
-            role: enumRole;
+            role: string;
             userName: string;
         }
 
@@ -28,7 +28,7 @@ export class UserHandler {
             const arg: user = {
                 name: userReq.name,
                 phone: userReq.phone,
-                role: userReq.role,
+                role: toRole(userReq.role),
                 userName: userReq.userName
             }
             

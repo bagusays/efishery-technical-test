@@ -14,3 +14,12 @@ func (h *server) FetchAllResource(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, result)
 }
+
+func (h *server) ResourceStatistics(c echo.Context) error {
+	result, err := h.resourceService.ResourceStatistics(c.Request().Context())
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, result)
+}

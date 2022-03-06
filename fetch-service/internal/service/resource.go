@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"time"
@@ -25,6 +26,31 @@ func NewResource(currencyConverterClient *currency_converter.Client, efisheryCli
 		currencyConverterClient: currencyConverterClient,
 		efisheryClient:          efisheryClient,
 	}
+}
+
+func (r Resource) ResourceStatistics(ctx context.Context) ([]model.ResourceStatistics, error) {
+	resources, err := r.FetchResource(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	byProvinceAndWeekly := make(map[string][]model.Resource)
+	for _, d := range resources {
+		key := fmt.Sprintf("%s|%d-%d", d.ProvinceArea, d.ParsedDate.Year(), d.ParsedDate.Month())
+		if _, ok := byProvinceAndWeekly[key]; !ok {
+			byProvinceAndWeekly[key] = []model.Resource{d}
+		} else {
+			byProvinceAndWeekly[key] = append(byProvinceAndWeekly[key], d)
+		}
+	}
+
+	b, err := json.Marshal(byProvinceAndWeekly)
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Println(string(b))
+	return nil, nil
 }
 
 func (r Resource) FetchResource(ctx context.Context) ([]model.Resource, error) {
@@ -60,8 +86,18 @@ func (r Resource) FetchResource(ctx context.Context) ([]model.Resource, error) {
 			priceInUsd = fmt.Sprintf("%.2f", pricef64/usd)
 		}
 
+		uuid := "unknownUUID"
+		if d.UUID != "" {
+			uuid = d.UUID
+		}
+
+		// if it doesn't have parsed date, skip
+		if time.Time(d.ParsedDate).IsZero() {
+			continue
+		}
+
 		finalResources[idx] = model.Resource{
-			UUID:         d.UUID,
+			UUID:         uuid,
 			Commodity:    d.Commodity,
 			ProvinceArea: d.ProvinceArea,
 			CityArea:     d.CityArea,
