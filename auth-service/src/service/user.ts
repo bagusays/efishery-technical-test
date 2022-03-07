@@ -14,7 +14,6 @@ export class UserService {
     create(args: user): string {
         let usersjson = readFileSync(this._config.DB_FILENAME, "utf-8");
         let users: user[] = JSON.parse(usersjson);
-        console.log(users, args.userName, args.phone)
         if(users.find(x => x.userName === args.userName || x.phone === args.phone)) {
             throw ERR_USER_ALREADY_REGISTERED;
         }

@@ -80,7 +80,7 @@ func TestResource_ResourceStatistics(t *testing.T) {
 						Min:     3,
 						Max:     7,
 						Median:  5,
-						Average: 4.67,
+						Average: 5,
 					},
 				}},
 			},

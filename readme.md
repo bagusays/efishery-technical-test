@@ -248,14 +248,14 @@ Error (500 Bad Request)
   - empty token
   - invalid token
 - fetch statistics of resources
-  - succeed (generate with several filter for data cleansing)
+  - succeed (generate with several filter for data cleansing needs)
   - empty token
   - invalid token
   - unauthorized when role is not admin
 
 # TODO
 Not implemented yet because the time is up
-* [x] Logger
-* [x] Test Coverage
-* [x] Deploy to Heroku
-* [x] Validator for each parameter
+* [ ] Logger
+* [ ] Test Coverage
+* [ ] Deploy to Heroku
+* [ ] Validator for each parameter

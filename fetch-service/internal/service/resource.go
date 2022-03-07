@@ -109,7 +109,7 @@ func (r resource) getStatisticByPrice(arr []model.Resource) ([]model.Resource, f
 }
 
 func (r resource) getStatisticBySize(arr []model.Resource) ([]model.Resource, float64, float64) {
-	avg := float64(arr[0].Price)
+	avg := float64(arr[0].Size)
 	for i := 1; i < len(arr); i++ {
 		avg += arr[i].Size
 		if arr[i-1].Size > arr[i].Size {
@@ -154,8 +154,8 @@ func (r resource) FetchResource(ctx context.Context) ([]model.Resource, error) {
 		return nil, err
 	}
 
-	finalResources := make([]model.Resource, len(resources))
-	for idx, d := range resources {
+	finalResources := make([]model.Resource, 0)
+	for _, d := range resources {
 		// if it doesn't have price, skip
 		if d.Price.String() == "" {
 			continue
@@ -187,7 +187,7 @@ func (r resource) FetchResource(ctx context.Context) ([]model.Resource, error) {
 			return nil, err
 		}
 
-		finalResources[idx] = model.Resource{
+		finalResources = append(finalResources, model.Resource{
 			UUID:         uuid,
 			Commodity:    d.Commodity,
 			ProvinceArea: d.ProvinceArea,
@@ -197,7 +197,7 @@ func (r resource) FetchResource(ctx context.Context) ([]model.Resource, error) {
 			PriceInUSD:   priceInUsd,
 			ParsedDate:   time.Time(d.ParsedDate),
 			Timestamp:    d.Timestamp,
-		}
+		})
 	}
 
 	return finalResources, nil
