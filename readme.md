@@ -41,6 +41,7 @@ As a resource orchestrator for getting all informations about fisheries data.
 
 
 # API Documentations
+If you prefer cURL sample: [LINK](curl.md)
 ## Auth Service
 ### Create User
 - URL: `/api/user`
@@ -221,9 +222,40 @@ Error (500 Bad Request)
 }
 ```
 
+# Test Cases (so far)
+## Auth Service
+- create user
+  - succeed (generate 4 digit password)
+  - invalid role
+  - username not unique
+  - phone not unique
+- login
+  - succeed (generate jwt token)
+  - wrong password
+  - phone not found
+- validate
+  - succeed (generate jwt claim content)
+  - empty token
+  - invalid token
+
+## Auth Service
+- validate
+  - succeed (generate jwt claim content)
+  - empty token
+  - invalid token
+- fetch resources
+  - succeed (generate an original data from efishery)
+  - empty token
+  - invalid token
+- fetch statistics of resources
+  - succeed (generate with several filter for data cleansing)
+  - empty token
+  - invalid token
+  - unauthorized when role is not admin
+
 # TODO
 Not implemented yet because the time is up
 * [x] Logger
 * [x] Test Coverage
 * [x] Deploy to Heroku
-* [x] Validator for parameter
+* [x] Validator for each parameter

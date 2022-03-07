@@ -3,7 +3,7 @@ version: "3"
 services:
   auth-service:
     build:
-      context: .
+      context: auth-service
     container_name: auth-service
     image: auth-service
     restart: unless-stopped
@@ -14,7 +14,7 @@ services:
 
   fetch-service:
     build:
-      context: .
+      context: fetch-service
     container_name: fetch-service
     image: fetch-service
     restart: unless-stopped
