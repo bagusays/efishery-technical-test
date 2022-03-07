@@ -2,6 +2,7 @@ package efishery
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"time"
 
@@ -33,14 +34,14 @@ func NewClient() Client {
 }
 
 type ResourceResponse struct {
-	UUID         string `json:"uuid"`
-	Commodity    string `json:"komoditas"`
-	ProvinceArea string `json:"area_provinsi"`
-	CityArea     string `json:"area_kota"`
-	Size         string `json:"size"`
-	Price        string `json:"price"`
-	ParsedDate   Time   `json:"tgl_parsed"`
-	Timestamp    string `json:"timestamp"`
+	UUID         string      `json:"uuid"`
+	Commodity    string      `json:"komoditas"`
+	ProvinceArea string      `json:"area_provinsi"`
+	CityArea     string      `json:"area_kota"`
+	Size         json.Number `json:"size"`
+	Price        json.Number `json:"price"`
+	ParsedDate   Time        `json:"tgl_parsed"`
+	Timestamp    string      `json:"timestamp"`
 }
 
 func (c client) FetchResource(ctx context.Context) ([]ResourceResponse, error) {

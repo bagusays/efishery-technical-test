@@ -1,24 +1,30 @@
 package model
 
-import "time"
+import (
+	"time"
+)
 
 type Resource struct {
 	UUID         string    `json:"uuid"`
 	Commodity    string    `json:"komoditas"`
 	ProvinceArea string    `json:"area_provinsi"`
 	CityArea     string    `json:"area_kota"`
-	Size         string    `json:"size"`
-	Price        string    `json:"price"`
+	Size         float64   `json:"size"`
+	Price        float64   `json:"price"`
 	PriceInUSD   string    `json:"priceInUsd"`
 	ParsedDate   time.Time `json:"tgl_parsed"`
 	Timestamp    string    `json:"timestamp"`
 }
 
 type ResourceStatistics struct {
-	ProvinceArea string    `json:"province"`
-	Date         time.Time `json:"date"`
-	Min          string    `json:"min"`
-	Max          string    `json:"max"`
-	Median       string    `json:"median"`
-	Average      string    `json:"average"`
+	ProvinceArea string     `json:"province"`
+	Date         string     `json:"date"`
+	Statistics   Statistics `json:"statistics"`
+}
+
+type Statistics struct {
+	Min     float64 `json:"min"`
+	Max     float64 `json:"max"`
+	Median  float64 `json:"median"`
+	Average float64 `json:"average"`
 }

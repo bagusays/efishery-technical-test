@@ -22,6 +22,11 @@ As a resource orchestrator for getting all informations about fisheries data.
 - Docker installed or
 - Node (14 or newer) & Go (1.6 or newer) installed
 
+## How To Test
+- Fetch Service
+  - `cd fetch-service && go test ./... -cover`
+- Auth Service
+  - `not implemented yet`
 ## How To Run
 - Manually
   - `cd auth-service && yarn dev`
@@ -171,7 +176,32 @@ Authorization: Bearer $TOKEN
 
 Success Response (200 OK)
 ```
-WIP
+{
+    "byPrice": [
+        {
+            "province": "DKI JAKARTA",
+            "date": "2022-3",
+            "statistics": {
+                "min": 500000,
+                "max": 500000,
+                "median": 500000,
+                "average": 500000
+            }
+        }
+    ],
+    "bySize": [
+        {
+            "province": "DKI JAKARTA",
+            "date": "2022-3",
+            "statistics": {
+                "min": 50,
+                "max": 50,
+                "median": 50,
+                "average": 500000
+            }
+        }
+    ]
+}
 ```
 
 ## General Constraints (Applied in all services)
@@ -194,6 +224,6 @@ Error (500 Bad Request)
 # TODO
 Not implemented yet because the time is up
 * [x] Logger
-* [x] Unit Test
+* [x] Test Coverage
 * [x] Deploy to Heroku
 * [x] Validator for parameter

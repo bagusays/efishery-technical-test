@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"testing"
 	"time"
@@ -15,6 +16,101 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 )
+
+func TestResource_ResourceStatistics(t *testing.T) {
+	getTime := func(tm string) time.Time {
+		t, _ := time.Parse("2006-01-02", tm)
+		return t
+	}
+
+	testCases := []struct {
+		name      string
+		mockCache func()
+		isErr     bool
+		want      map[string][]model.ResourceStatistics
+	}{
+		{
+			name: "should be succeed",
+			mockCache: func() {
+				internal.SetCache("usd", 14000, time.Now().Add(1*time.Hour))
+				internal.SetCache("resource", []efishery.ResourceResponse{{
+					UUID:         "uuid",
+					Commodity:    "commodity",
+					ProvinceArea: "provinceArea",
+					CityArea:     "cityArea",
+					Size:         "3",
+					Price:        "2",
+					ParsedDate:   efishery.Time(getTime("2020-01-01")),
+					Timestamp:    "timestamp",
+				}, {
+					UUID:         "uuid",
+					Commodity:    "commodity",
+					ProvinceArea: "provinceArea",
+					CityArea:     "cityArea",
+					Size:         "7",
+					Price:        "15",
+					ParsedDate:   efishery.Time(getTime("2020-01-02")),
+					Timestamp:    "timestamp",
+				}, {
+					UUID:         "uuid",
+					Commodity:    "commodity",
+					ProvinceArea: "provinceArea",
+					CityArea:     "cityArea",
+					Size:         "5",
+					Price:        "10",
+					ParsedDate:   efishery.Time(getTime("2020-01-02")),
+					Timestamp:    "timestamp",
+				}}, time.Now().Add(1*time.Hour))
+			},
+			want: map[string][]model.ResourceStatistics{
+				"byPrice": {{
+					ProvinceArea: "provinceArea",
+					Date:         "2020-1",
+					Statistics: model.Statistics{
+						Min:     2,
+						Max:     15,
+						Median:  10,
+						Average: (float64(2) + float64(10) + float64(15)) / 3,
+					},
+				}},
+				"bySize": {{
+					ProvinceArea: "provinceArea",
+					Date:         "2020-1",
+					Statistics: model.Statistics{
+						Min:     3,
+						Max:     7,
+						Median:  5,
+						Average: 4.67,
+					},
+				}},
+			},
+		},
+	}
+
+	for _, tt := range testCases {
+		t.Run(tt.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer func() {
+				ctrl.Finish()
+				internal.FlushCache()
+			}()
+
+			svc := NewResource(nil, nil)
+			tt.mockCache()
+			resources, err := svc.ResourceStatistics(context.Background())
+			if tt.isErr {
+				assert.Error(t, err)
+				return
+			}
+			assert.NoError(t, err)
+			assert.EqualValues(t, tt.want, resources)
+
+			cache, err := internal.GetCache("resource")
+			assert.NoError(t, err)
+			assert.NotNil(t, cache)
+		})
+	}
+}
 
 func TestResource_FetchResource(t *testing.T) {
 	tm := time.Now()
@@ -36,7 +132,7 @@ func TestResource_FetchResource(t *testing.T) {
 					Commodity:    "commodity",
 					ProvinceArea: "provinceArea",
 					CityArea:     "cityArea",
-					Size:         "size",
+					Size:         json.Number("1"),
 					Price:        "20000",
 					ParsedDate:   efishery.Time(tm),
 					Timestamp:    "timestamp",
@@ -45,7 +141,7 @@ func TestResource_FetchResource(t *testing.T) {
 					Commodity:    "commodity",
 					ProvinceArea: "provinceArea",
 					CityArea:     "cityArea",
-					Size:         "size",
+					Size:         json.Number("1"),
 					Price:        "20000",
 					ParsedDate:   efishery.Time(tm),
 					Timestamp:    "timestamp",
@@ -60,8 +156,8 @@ func TestResource_FetchResource(t *testing.T) {
 					Commodity:    "commodity",
 					ProvinceArea: "provinceArea",
 					CityArea:     "cityArea",
-					Size:         "size",
-					Price:        "20000",
+					Size:         1,
+					Price:        20000,
 					ParsedDate:   tm,
 					Timestamp:    "timestamp",
 					PriceInUSD:   fmt.Sprintf("%.2f", float64(20000)/float64(14000)),
@@ -70,8 +166,8 @@ func TestResource_FetchResource(t *testing.T) {
 					Commodity:    "commodity",
 					ProvinceArea: "provinceArea",
 					CityArea:     "cityArea",
-					Size:         "size",
-					Price:        "20000",
+					Size:         1,
+					Price:        20000,
 					ParsedDate:   tm,
 					Timestamp:    "timestamp",
 					PriceInUSD:   fmt.Sprintf("%.2f", float64(20000)/float64(14000)),
@@ -87,7 +183,7 @@ func TestResource_FetchResource(t *testing.T) {
 					Commodity:    "commodity",
 					ProvinceArea: "provinceArea",
 					CityArea:     "cityArea",
-					Size:         "size",
+					Size:         json.Number("1"),
 					Price:        "20000",
 					ParsedDate:   efishery.Time(tm),
 					Timestamp:    "timestamp",
@@ -101,8 +197,8 @@ func TestResource_FetchResource(t *testing.T) {
 					Commodity:    "commodity",
 					ProvinceArea: "provinceArea",
 					CityArea:     "cityArea",
-					Size:         "size",
-					Price:        "20000",
+					Size:         1,
+					Price:        20000,
 					ParsedDate:   tm,
 					Timestamp:    "timestamp",
 					PriceInUSD:   fmt.Sprintf("%.2f", float64(20000)/float64(14000)),
@@ -129,7 +225,7 @@ func TestResource_FetchResource(t *testing.T) {
 					Commodity:    "commodity",
 					ProvinceArea: "provinceArea",
 					CityArea:     "cityArea",
-					Size:         "size",
+					Size:         json.Number("1"),
 					Price:        "20000",
 					ParsedDate:   efishery.Time(tm),
 					Timestamp:    "timestamp",
