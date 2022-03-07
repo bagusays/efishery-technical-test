@@ -36,6 +36,9 @@ export class AuthHandler {
 
         return function(req: Request, res: Response, next?: NextFunction) {
             const authorizationHeader: string = req.headers.authorization;
+            if (authorizationHeader === undefined){
+                throw ERR_TOKEN_IS_MISSING;
+            }
             const token: string = authorizationHeader.replace("Bearer ", "");
             if (token === "") {
                 throw ERR_TOKEN_IS_MISSING;
